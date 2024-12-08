@@ -28,7 +28,7 @@ class UnitreeA1RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
 
         # reduce action scale
         self.actions.joint_pos.scale = 0.25
-        print("self.episode_length_s: ", self.episode_length_s)
+
         # event
         self.events.push_robot = None
         self.events.add_base_mass.params["mass_distribution_params"] = (-1.0, 3.0)
