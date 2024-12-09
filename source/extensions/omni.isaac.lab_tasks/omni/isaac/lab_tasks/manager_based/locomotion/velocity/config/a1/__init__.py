@@ -41,6 +41,7 @@ gym.register(
         "env_cfg_entry_point": f"{__name__}.rough_env_cfg:UnitreeA1RoughEnvCfg",
         "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:UnitreeA1RoughPPORunnerCfg",
         "skrl_cfg_entry_point": f"{agents.__name__}:skrl_rough_ppo_cfg.yaml",
+        "universal_policy_tdmpc2": f"{agents.__name__}.universal_policy_tdmpc2:UnitreeA1RoughPPORunnerCfg",
     },
 )
 
