@@ -75,8 +75,9 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import RslRlOnPolicyRunnerCfg, R
 # torch.backends.cudnn.deterministic = False
 # torch.backends.cudnn.benchmark = False
 
+# TODO: typecast the agent_cfg below
 @hydra_task_config(args_cli.task, "universal_policy_tdmpc2")
-def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg: RslRlOnPolicyRunnerCfg):
+def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg):
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
 

@@ -14,40 +14,99 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
 from tdmpc2.common.parser import parse_cfg
 
 @configclass
-class UnitreeA1RoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
-    num_steps_per_env = 24
-    max_iterations = 1500
-    save_interval = 50
-    experiment_name = "unitree_a1_rough"
-    empirical_normalization = False
-    policy = RslRlPpoActorCriticCfg(
-        init_noise_std=1.0,
-        actor_hidden_dims=[512, 256, 128],
-        critic_hidden_dims=[512, 256, 128],
-        activation="elu",
-    )
-    algorithm = RslRlPpoAlgorithmCfg(
-        value_loss_coef=1.0,
-        use_clipped_value_loss=True,
-        clip_param=0.2,
-        entropy_coef=0.01,
-        num_learning_epochs=5,
-        num_mini_batches=4,
-        learning_rate=1.0e-3,
-        schedule="adaptive",
-        gamma=0.99,
-        lam=0.95,
-        desired_kl=0.01,
-        max_grad_norm=1.0,
-    )
+class UniversalPolicyTdmpc2():
+    # TODO: print out on the tdmpc2 side and see which config values are changed during 
+    # runtime not by flags but by other stuff in the program
+    seed: int = 42
+    experiment_name: str = "tdmpc2_a1"
+    run_name: str = ""
+    resume: bool = False
+    max_iterations: int = 300
 
+    # TMPDC2 examples
+    # -------------------------------
+    # -------------------------------
+    task = 'dog-run'
+    obs = 'state'
 
-@configclass
-class UnitreeA1FlatPPORunnerCfg(UnitreeA1RoughPPORunnerCfg):
-    def __post_init__(self):
-        super().__post_init__()
+    # evaluation
+    # checkpoint: ???
+    eval_episodes = 10
+    eval_freq = 50000
 
-        self.max_iterations = 300
-        self.experiment_name = "unitree_a1_flat"
-        self.policy.actor_hidden_dims = [128, 128, 128]
-        self.policy.critic_hidden_dims = [128, 128, 128]
+    # training
+    steps = 10_000_000
+    batch_size = 256
+    reward_coef = 0.1
+    value_coef = 0.1
+    consistency_coef = 20
+    rho = 0.5
+    lr = 3e-4
+    enc_lr_scale = 0.3
+    grad_clip_norm = 20
+    tau = 0.01
+    discount_denom = 5
+    discount_min = 0.95
+    discount_max = 0.995
+    buffer_size = 1_000_000
+    exp_name = 'default'
+    # data_dir = ???
+
+    # planning
+    mpc = True
+    iterations = 6
+    num_samples = 512
+    num_elites = 64
+    num_pi_trajs = 24
+    horizon = 3
+    min_std = 0.05
+    max_std = 2
+    temperature = 0.5
+
+    # actor
+    log_std_min = -10
+    log_std_max = 2
+    entropy_coef = 1e-4
+
+    # critic
+    num_bins = 101
+    vmin = -10
+    vmax = +10
+
+    # architecture
+    # model_size: ???
+    num_enc_layers = 2
+    enc_dim = 256
+    num_channels = 32
+    mlp_dim = 512
+    latent_dim = 512
+    task_dim = 96
+    num_q = 5
+    dropout = 0.01
+    simnorm_dim = 8
+
+    # logging
+    wandb_project = 'Universal_policy_debug'
+    wandb_name = 'baseline'
+    wandb_entity = 'deepan_lab'
+    wandb_silent = True
+    disable_wandb = False
+    save_csv = True
+
+    # misc
+    save_video = True
+    save_agent = True
+
+    # convenience
+    # work_dir: ???
+    # task_title: ???
+    # multitask: ???
+    # tasks: ???
+    # obs_shape: ???
+    # action_dim: ???
+    # episode_length: ???
+    # obs_shapes: ???
+    # action_dims: ???
+    # episode_lengths: ???
+    # seed_steps: ???
+    # bin_size: ???
