@@ -40,6 +40,7 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # NOTE: tdmpc2 TimeStepToGymWrapper doesn't need to be copied over since the observation_space, action_space and max_episode_steps are all handled by the IsaacLab env
 # NOTE: ExtendedTimeStepWrapper doesn't need to be copied over since it unwraps to action repeater.
 
+# TODO: which logger are we using and are we using wandb
 
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
 class UniversalPolicyWrapper():
@@ -74,15 +75,13 @@ class UniversalPolicyWrapper():
     def step(self, action: torch.Tensor):
         # TODO: check if the line below is needed
         assert action.dtype == torch.float32
-        # TODO: this is where the -1, +1 clamping of tdmpc2 should be handled
+        # TODO: this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
         # TODO: copy from the TensorWrapper code but be careful.
         # NOTE: ./rsl_rl/vecenv_wrapper.py enters a torch tensor in the step function 
         obs_dict, rew, terminated, truncated, extras = self.env.step(actions)
-        # TODO: what is info and what is sucess. search this in tdmpc2 and check if it is in extras
-        info = defaultdict(float, info)
-        info['success'] = float(info['success'])
+        # NOTE: You do not need to borrow the info variable because it is only used to calculate success. There is no episode success in this env.
         # TODO: make sure you are using self._try_f32_tensor correctly below because it is custom code 
-        # return self._obs_to_tensor(obs), self._try_f32_tensor(reward), self._try_f32_tensor(done), info
+        # return self._obs_to_tensor(obs), self._try_f32_tensor(reward), self._try_f32_tensor(done)
         # TODO: claculate the correct definitions of the variables below. They are just a place holder for now
-        # NOTE: do not copy the line 'if not self.unwrapped.cfg.is_finite_horizon:' from vecenv_wrapper because we need access to both pieces of info for now. this might change
+        # NOTE: do not copy the line 'if not self.unwrapped.cfg.is_finite_horizon:' from IsaacLab's vecenv_wrapper because we need access to both pieces of info for now. this might change
         return obs_dict, rew, terminated, truncated, extras
