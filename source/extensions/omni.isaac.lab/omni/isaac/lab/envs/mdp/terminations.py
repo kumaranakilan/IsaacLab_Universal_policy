@@ -29,6 +29,7 @@ MDP terminations.
 
 def time_out(env: ManagerBasedRLEnv) -> torch.Tensor:
     """Terminate the episode when the episode length exceeds the maximum episode length."""
+    # NOTE: This is routed into the code via velocity_env_cfg's TerminationsCfg class.
     return env.episode_length_buf >= env.max_episode_length
 
 

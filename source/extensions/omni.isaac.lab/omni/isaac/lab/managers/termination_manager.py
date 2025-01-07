@@ -161,6 +161,7 @@ class TerminationManager(ManagerBase):
         self._truncated_buf[:] = False
         self._terminated_buf[:] = False
         # iterate over all the termination terms
+        # NOTE: This is where terminations are computed
         for name, term_cfg in zip(self._term_names, self._term_cfgs):
             value = term_cfg.func(self._env, **term_cfg.params)
             # store timeout signal separately
