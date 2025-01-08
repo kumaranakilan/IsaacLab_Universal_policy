@@ -18,7 +18,6 @@ from tdmpc2.trainer import isaaclab_online_trainer
 # local imports
 import cli_args  # isort: skip
 
-
 # add argparse arguments
 parser = argparse.ArgumentParser(description="Train an RL agent with RSL-RL.")
 parser.add_argument("--video", action="store_true", default=False, help="Record videos during training.")
@@ -68,6 +67,7 @@ import omni.isaac.lab_tasks  # noqa: F401
 from omni.isaac.lab_tasks.utils import get_checkpoint_path
 from omni.isaac.lab_tasks.utils.hydra import hydra_task_config
 from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
+from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyWrapper
 
 # TODO: understand what the lines below are and then import them. Also make sure to check why their values are T or F
 # torch.backends.cuda.matmul.allow_tf32 = True
@@ -128,6 +128,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
 
+    print("train side type: ", type(env))
     trainer = isaaclab_online_trainer.OnlineTrainer(cfg=None, env=env, agent=None, buffer=None, logger=None)
     trainer.train()
     env.close()
