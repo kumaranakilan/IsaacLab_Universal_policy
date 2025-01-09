@@ -34,3 +34,4 @@ For instance, to wrap an environment in the `Stable-Baselines3`_ wrapper, you ca
 """
 
 from .universal_policy import UniversalPolicyWrapper
+from .universal_policy_config import UniversalPolicyTdmpc2

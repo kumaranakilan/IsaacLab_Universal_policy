@@ -3,8 +3,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-# TODO: delete this file
-
 from omni.isaac.lab.utils import configclass
 
 from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
@@ -15,6 +13,8 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
 
 from tdmpc2.common.parser import parse_cfg
 
+# NOTE: The reason the config was moved here is because it is not specific to any env but to all of tdmpc2
+
 @configclass
 class UniversalPolicyTdmpc2():
     # TODO: print out on the tdmpc2 side and see which config values are changed during 
@@ -23,7 +23,7 @@ class UniversalPolicyTdmpc2():
     experiment_name: str = "tdmpc2_a1"
     run_name: str = ""
     resume: bool = False
-    max_iterations: int = 300
+    max_iterations: int = 300 # TODO: not sure where this came from???
 
     # TMPDC2 examples
     # -------------------------------

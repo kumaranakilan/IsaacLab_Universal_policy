@@ -26,7 +26,7 @@ import torch
 import torch.nn as nn  # noqa: F401
 from typing import Any
 
-# TODO: import tdmpc2 library. copy sb3 wrapper
+from rsl_rl.env import VecEnv
 
 from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 
@@ -34,6 +34,7 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # TODO: include the super class
 # TODO: delete tdmpc2/envs/wrappers/issac_lab_wrapper.py as it is redundant with the current file
 
+# TODO: probably move this file and the config file in this folder to a subfolder similar to the rsl_rl structure
 # NOTE: ActionDTypeWrapper doesn't need to be copied over since the datatype is float32
 # NOTE: ActionRepeatWrapper doesn't need to be copied over since we are not repeating actions.
 # TODO: Since we are not repeating actions do we need to increase H?
@@ -43,16 +44,74 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # TODO: which logger are we using and are we using wandb
 
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
-class UniversalPolicyWrapper():
-    def __init__(self, env):
-        super().__init__(env)
+class UniversalPolicyWrapper(VecEnv):
+    def __init__(self, env: ManagerBasedRLEnv | DirectRLEnv):
+        # check that input is valid
+        if not isinstance(env.unwrapped, ManagerBasedRLEnv) and not isinstance(env.unwrapped, DirectRLEnv):
+            raise ValueError(
+                "The environment must be inherited from ManagerBasedRLEnv or DirectRLEnv. Environment type:"
+                f" {type(env)}"
+            )
+        
+        # initialize the wrapper
+        self.env = env
+        # store information required by wrapper
+        self.num_envs = self.unwrapped.num_envs
+        self.device = self.unwrapped.device
+        self.max_episode_length = self.unwrapped.max_episode_length
+        if hasattr(self.unwrapped, "action_manager"):
+            self.num_actions = self.unwrapped.action_manager.total_action_dim
+        else:
+            self.num_actions = gym.spaces.flatdim(self.unwrapped.single_action_space)
+        if hasattr(self.unwrapped, "observation_manager"):
+            self.num_obs = self.unwrapped.observation_manager.group_obs_dim["policy"][0]
+        else:
+            self.num_obs = gym.spaces.flatdim(self.unwrapped.single_observation_space["policy"])
+        # -- privileged observations
+        if (
+            hasattr(self.unwrapped, "observation_manager")
+            and "critic" in self.unwrapped.observation_manager.group_obs_dim
+        ):
+            self.num_privileged_obs = self.unwrapped.observation_manager.group_obs_dim["critic"][0]
+        elif hasattr(self.unwrapped, "num_states") and "critic" in self.unwrapped.single_observation_space:
+            self.num_privileged_obs = gym.spaces.flatdim(self.unwrapped.single_observation_space["critic"])
+        else:
+            self.num_privileged_obs = 0
+        # reset at the start since the RSL-RL runner does not call reset
+        self.env.reset()
+
+    """
+    Properties
+    """
+
+    @property
+    def unwrapped(self) -> ManagerBasedRLEnv | DirectRLEnv:
+        """Returns the base environment of the wrapper.
+
+        This will be the bare :class:`gymnasium.Env` environment, underneath all layers of wrappers.
+        """
+        return self.env.unwrapped
+
+    @property
+    def action_space(self) -> gym.Space:
+        """Returns the :attr:`Env` :attr:`action_space`."""
+        return self.env.action_space
+    
+
+    def get_observations(self) -> tuple[torch.Tensor, dict]:
+        """Returns the current observations of the environment."""
+        if hasattr(self.unwrapped, "observation_manager"):
+            obs_dict = self.unwrapped.observation_manager.compute()
+        else:
+            obs_dict = self.unwrapped._get_observations()
+        return obs_dict["policy"], {"observations": obs_dict}
 
     def rand_act(self):
         # NOTE: IsaacLab env expects a torch tensor as action input
         # TODO: also find out why action_space.sample() gives a random numpy array
         # NOTE: IsaacLab runs on 32 bit single precision so env.step  expects a float32 torch tensor
         # TODO: How do we handle the unbounded action space
-        return torch.from_numpy(self.action_space.sample().astype(np.float32))
+        return self._try_f32_tensor(self.action_space.sample())
 	
     def _try_f32_tensor(self, x: torch.Tensor):
         if x.dtype == torch.float64:
@@ -72,9 +131,9 @@ class UniversalPolicyWrapper():
         # NOTE: ManagerBasedRLEnv handles the resetting in the step function. This only reset 
         return self._obs_to_tensor(self.env.reset())
     
-    def step(self, action: torch.Tensor):
+    def step(self, actions: torch.Tensor):
         # TODO: check if the line below is needed
-        assert action.dtype == torch.float32
+        assert actions.dtype == torch.float32
         # TODO: this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
         # TODO: copy from the TensorWrapper code but be careful.
         # NOTE: ./rsl_rl/vecenv_wrapper.py enters a torch tensor in the step function 

@@ -68,6 +68,8 @@ from omni.isaac.lab_tasks.utils import get_checkpoint_path
 from omni.isaac.lab_tasks.utils.hydra import hydra_task_config
 from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlVecEnvWrapper
 from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyWrapper
+from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyTdmpc2
+
 
 # TODO: understand what the lines below are and then import them. Also make sure to check why their values are T or F
 # torch.backends.cuda.matmul.allow_tf32 = True
@@ -129,7 +131,9 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         env = multi_agent_to_single_agent(env)
 
     print("train side type: ", type(env))
-    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=None, env=env, agent=None, buffer=None, logger=None)
+    cfg = UniversalPolicyTdmpc2()
+    env = UniversalPolicyWrapper(env)
+    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=None, logger=None)
     trainer.train()
     env.close()
 
