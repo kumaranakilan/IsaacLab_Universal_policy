@@ -111,7 +111,8 @@ class UniversalPolicyWrapper(VecEnv):
         # TODO: also find out why action_space.sample() gives a random numpy array
         # NOTE: IsaacLab runs on 32 bit single precision so env.step  expects a float32 torch tensor
         # TODO: How do we handle the unbounded action space
-        return self._try_f32_tensor(self.action_space.sample())
+        actions = torch.from_numpy(self.action_space.sample())
+        return self._try_f32_tensor(actions)
 	
     def _try_f32_tensor(self, x: torch.Tensor):
         if x.dtype == torch.float64:
