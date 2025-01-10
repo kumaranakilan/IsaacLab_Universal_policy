@@ -41,6 +41,8 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # NOTE: tdmpc2 TimeStepToGymWrapper doesn't need to be copied over since the observation_space, action_space and max_episode_steps are all handled by the IsaacLab env
 # NOTE: ExtendedTimeStepWrapper doesn't need to be copied over since it unwraps to action repeater.
 
+# TODO: just because an operation is on torch does not mean it is on GPU. Make sure that all new tensors upon creation are on the same GPU.
+
 # TODO: which logger are we using and are we using wandb
 
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
@@ -144,4 +146,4 @@ class UniversalPolicyWrapper(VecEnv):
         # return self._obs_to_tensor(obs), self._try_f32_tensor(reward), self._try_f32_tensor(done)
         # TODO: claculate the correct definitions of the variables below. They are just a place holder for now
         # NOTE: do not copy the line 'if not self.unwrapped.cfg.is_finite_horizon:' from IsaacLab's vecenv_wrapper because we need access to both pieces of info for now. this might change
-        return obs_dict, rew, terminated, truncated, extras
+        return obs_dict["policy"], rew, terminated, truncated, extras

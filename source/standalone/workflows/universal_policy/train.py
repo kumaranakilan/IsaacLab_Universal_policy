@@ -51,7 +51,9 @@ import os
 import torch
 from datetime import datetime
 
-# TODO: import tdmpc2
+
+from tdmpc2.common.buffer import Buffer
+
 
 from omni.isaac.lab.envs import (
     DirectMARLEnv,
@@ -133,7 +135,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     print("train side type: ", type(env))
     cfg = UniversalPolicyTdmpc2()
     env = UniversalPolicyWrapper(env)
-    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=None, logger=None)
+    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=Buffer(cfg), logger=None)
     trainer.train()
     env.close()
 

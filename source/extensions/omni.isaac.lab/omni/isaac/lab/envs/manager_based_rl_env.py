@@ -135,7 +135,11 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
     """
     Operations - MDP
     """
-
+    # TODO: Include an option in the function arguments below that swaps step 5 and 6.
+    # Then in the isaaclab_online_trainer.py code get_observations on the 
+    # UniversalPolicyWrapper wrapped environment. which I think will make a call to  
+    # self.observation_manager.compute() in this file. This part is something I am not
+    # sure about. Verify it before proceeding !!!!
     def step(self, action: torch.Tensor) -> VecEnvStepReturn:
         """Execute one time-step of the environment's dynamics and reset terminated environments.
 
