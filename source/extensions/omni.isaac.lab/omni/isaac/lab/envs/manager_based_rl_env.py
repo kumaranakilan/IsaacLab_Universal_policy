@@ -135,12 +135,21 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
     """
     Operations - MDP
     """
+    def _ordered_reset(self):
+        # TODO: test this part. You haven't tested it.
+        reset_env_ids = self.reset_buf.nonzero(as_tuple=False).squeeze(-1)
+        if len(reset_env_ids) > 0:
+            self._reset_idx(reset_env_ids)
+            # if sensors are added to the scene, make sure we render to reflect changes in reset
+            if self.sim.has_rtx_sensors() and self.cfg.rerender_on_reset:
+                self.sim.render()
+
     # TODO: Include an option in the function arguments below that swaps step 5 and 6.
     # Then in the isaaclab_online_trainer.py code get_observations on the 
     # UniversalPolicyWrapper wrapped environment. which I think will make a call to  
     # self.observation_manager.compute() in this file. This part is something I am not
     # sure about. Verify it before proceeding !!!!
-    def step(self, action: torch.Tensor) -> VecEnvStepReturn:
+    def step(self, action: torch.Tensor, swap_reset_order=False) -> VecEnvStepReturn:
         """Execute one time-step of the environment's dynamics and reset terminated environments.
 
         Unlike the :class:`ManagerBasedEnv.step` class, the function performs the following operations:
@@ -195,12 +204,8 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
         self.reward_buf = self.reward_manager.compute(dt=self.step_dt)
 
         # -- reset envs that terminated/timed-out and log the episode information
-        reset_env_ids = self.reset_buf.nonzero(as_tuple=False).squeeze(-1)
-        if len(reset_env_ids) > 0:
-            self._reset_idx(reset_env_ids)
-            # if sensors are added to the scene, make sure we render to reflect changes in reset
-            if self.sim.has_rtx_sensors() and self.cfg.rerender_on_reset:
-                self.sim.render()
+        if not self.cfg.swap_reset_order:
+            self._ordered_reset()
 
         # -- update command
         self.command_manager.compute(dt=self.step_dt)
@@ -210,6 +215,10 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
         # -- compute observations
         # note: done after reset to get the correct observations for reset envs
         self.obs_buf = self.observation_manager.compute()
+
+         # -- reset envs that terminated/timed-out and log the episode information (if swap)
+        if self.cfg.swap_reset_order:
+            self._ordered_reset()
 
         # return observations, rewards, resets and extras
         return self.obs_buf, self.reward_buf, self.reset_terminated, self.reset_time_outs, self.extras

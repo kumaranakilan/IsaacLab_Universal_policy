@@ -96,6 +96,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     env_cfg.seed = agent_cfg.seed
     env_cfg.sim.device = args_cli.device if args_cli.device is not None else env_cfg.sim.device
 
+    env_cfg.swap_reset_order = True
+
     # specify directory for logging experiments
     log_root_path = os.path.join("logs", "universal_policy", agent_cfg.experiment_name)
     log_root_path = os.path.abspath(log_root_path)

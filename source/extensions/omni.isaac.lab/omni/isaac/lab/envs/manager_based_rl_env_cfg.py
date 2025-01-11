@@ -41,6 +41,9 @@ class ManagerBasedRLEnvCfg(ManagerBasedEnvCfg):
         wrappers to determine what type of done signal to send to the corresponding learning agent.
     """
 
+    swap_reset_order: bool = False
+    # TODO: Add doc string
+
     episode_length_s: float = MISSING
     """Duration of an episode (in seconds).
 
