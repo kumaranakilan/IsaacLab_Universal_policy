@@ -88,8 +88,8 @@ class UniversalPolicyTdmpc2():
     simnorm_dim = 8
 
     # logging
-    wandb_project = 'Universal_policy_debug'
-    wandb_name = 'baseline'
+    wandb_project = 'Universal_policy_IsaacLab'
+    wandb_name = 'debug'
     wandb_entity = 'deepan_lab'
     wandb_silent = True
     disable_wandb = False
@@ -100,15 +100,15 @@ class UniversalPolicyTdmpc2():
     save_agent = True
 
     # convenience
-    # work_dir: ???
-    # task_title: ???
+    work_dir = '~/Documents/Kumaran/universal_policy_isaaclab_logs'
+    task_title = ""
     # multitask: ???
     # tasks: ???
-    # obs_shape: ???
+    obs_shape = 0
     # action_dim: ???
     # episode_length: ???
     # obs_shapes: ???
-    # action_dims: ???
+    action_dims = 0
     # episode_lengths: ???
     # seed_steps: ???
     # bin_size: ???

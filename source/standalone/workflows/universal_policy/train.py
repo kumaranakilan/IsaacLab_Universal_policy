@@ -14,6 +14,8 @@ from omni.isaac.lab.app import AppLauncher
 
 # TODO: make sure the stuff below is correct:
 from tdmpc2.trainer import isaaclab_online_trainer
+from tdmpc2.common.logger import Logger
+
 
 # local imports
 import cli_args  # isort: skip
@@ -134,10 +136,25 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
 
-    print("train side type: ", type(env))
+    print("args_cli.task: ", args_cli.task)
+    
+    # parse config
+    # TODO: agent_cfg is in the old agent specific config that was meant to be deleted. We can't have two configs. Reconsile this. cfg = UniversalPolicyTdmpc2() may or may not be the right way to do this. How does the other train.py for rsl_rl do this?
     cfg = UniversalPolicyTdmpc2()
+    # TODO: (Low priority) All of the cfg modification operations below should probably replaced with parser like TDMPC does
+    cfg.work_dir = os.path.join(cfg.work_dir, 'logs', cfg.task, str(cfg.seed), cfg.exp_name)
+    # TODO: (Low priority) this is probably not the best way to get the shape. Change it later.
+    sample_obs = env.observation_space.sample()['policy']
+    cfg.obs_shape = {"state":sample_obs.shape}
+    print(f"cfg.obs_shape {cfg.obs_shape}")
+    # TODO: (Low priority) This is redundant. If you deal with the agent_cfg issue the line below isn't required
+    cfg.task = args_cli.task
+    cfg.task_title = cfg.task.replace("-", " ").title()
+    print("cfg.action_dim: ", env.action_space.sample().shape)
+    cfg.action_dim = env.action_space.sample().shape
+
     env = UniversalPolicyWrapper(env)
-    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=Buffer(cfg), logger=None)
+    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=Buffer(cfg), logger=Logger(cfg))
     trainer.train()
     env.close()
 
