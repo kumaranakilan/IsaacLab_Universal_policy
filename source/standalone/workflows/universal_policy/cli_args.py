@@ -48,6 +48,7 @@ def update_rsl_rl_cfg(agent_cfg: RslRlOnPolicyRunnerCfg, args_cli: argparse.Name
     Returns:
         The updated configuration for RSL-RL agent based on inputs.
     """
+    # TODO: obivously change agent config type
     # TODO: replace this with the proper command line override
     # # override the default configuration with CLI arguments
     # if hasattr(args_cli, "seed") and args_cli.seed is not None:

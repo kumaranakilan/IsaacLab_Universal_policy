@@ -15,6 +15,7 @@ from omni.isaac.lab.app import AppLauncher
 # TODO: make sure the stuff below is correct:
 from tdmpc2.trainer import isaaclab_online_trainer
 from tdmpc2.common.logger import Logger
+from tdmpc2.tdmpc2 import TDMPC2
 
 
 # local imports
@@ -86,6 +87,8 @@ from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyTdmpc2
 def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg):
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
+    # TODO: Remove line below once you figure out how to deal with terminations
+    env_cfg.terminations.base_contact.params["sensor_cfg"].body_names = None
 
     agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli)
     env_cfg.scene.num_envs = args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
@@ -136,7 +139,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
 
-    print("args_cli.task: ", args_cli.task)
+    print("env_cfg.undesired_contacts: ", env_cfg.rewards.undesired_contacts)
     
     # parse config
     # TODO: agent_cfg is in the old agent specific config that was meant to be deleted. We can't have two configs. Reconsile this. cfg = UniversalPolicyTdmpc2() may or may not be the right way to do this. How does the other train.py for rsl_rl do this?
@@ -151,9 +154,10 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     cfg.task = args_cli.task
     cfg.task_title = cfg.task.replace("-", " ").title()
     print("cfg.action_dim: ", env.action_space.sample().shape)
-    cfg.action_dim = env.action_space.sample().shape
+    cfg.action_dim = env.action_space.sample().shape[-1]
 
     env = UniversalPolicyWrapper(env)
+    agent = TDMPC2(cfg)
     trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=Buffer(cfg), logger=Logger(cfg))
     trainer.train()
     env.close()

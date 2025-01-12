@@ -102,10 +102,10 @@ class UniversalPolicyTdmpc2():
     # convenience
     work_dir = '~/Documents/Kumaran/universal_policy_isaaclab_logs'
     task_title = ""
-    # multitask: ???
+    multitask = False
     # tasks: ???
-    obs_shape = 0
-    # action_dim: ???
+    obs_shape = 0 # TODO: this is not a correct default value obs_shape. It should be a shape.
+    action_dim = 0
     # episode_length: ???
     # obs_shapes: ???
     action_dims = 0
