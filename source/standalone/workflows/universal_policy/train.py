@@ -113,6 +113,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         log_dir += f"_{agent_cfg.run_name}"
     log_dir = os.path.join(log_root_path, log_dir)
 
+    print("env_cfg.scene.num_envs: ", env_cfg.scene.num_envs)
+
     # create isaac environment
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
 
@@ -148,7 +150,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     cfg.work_dir = os.path.join(cfg.work_dir, 'logs', cfg.task, str(cfg.seed), cfg.exp_name)
     # TODO: (Low priority) this is probably not the best way to get the shape. Change it later.
     sample_obs = env.observation_space.sample()['policy']
-    cfg.obs_shape = {"state":sample_obs.shape}
+    cfg.obs_shape = {"state":sample_obs.shape[1:]}
     print(f"cfg.obs_shape {cfg.obs_shape}")
     # TODO: (Low priority) This is redundant. If you deal with the agent_cfg issue the line below isn't required
     cfg.task = args_cli.task
@@ -157,8 +159,14 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     cfg.action_dim = env.action_space.sample().shape[-1]
 
     env = UniversalPolicyWrapper(env)
+    print("env.max_episode_length: ", env.max_episode_length)
+    cfg.episode_length = env.max_episode_length
+    cfg.task_dim = 0
+    cfg.num_envs = env_cfg.scene.num_envs
+
     agent = TDMPC2(cfg)
-    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=None, buffer=Buffer(cfg), logger=Logger(cfg))
+    # TODO: I don't know if the original tdmpc2 training code disables MPC for the initial iterations or not. If it is make sure the functionality is still on.
+    trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=agent, buffer=Buffer(cfg), logger=Logger(cfg))
     trainer.train()
     env.close()
 

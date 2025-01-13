@@ -147,3 +147,6 @@ class UniversalPolicyWrapper(VecEnv):
         # TODO: claculate the correct definitions of the variables below. They are just a place holder for now
         # NOTE: do not copy the line 'if not self.unwrapped.cfg.is_finite_horizon:' from IsaacLab's vecenv_wrapper because we need access to both pieces of info for now. this might change
         return obs_dict["policy"], rew, terminated, truncated, extras
+
+    def max_episode_length(self):
+        return self.env.max_episode_length

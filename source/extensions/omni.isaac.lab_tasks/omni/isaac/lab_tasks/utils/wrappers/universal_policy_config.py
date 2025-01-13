@@ -106,9 +106,10 @@ class UniversalPolicyTdmpc2():
     # tasks: ???
     obs_shape = 0 # TODO: this is not a correct default value obs_shape. It should be a shape.
     action_dim = 0
-    # episode_length: ???
+    episode_length = 0
     # obs_shapes: ???
     action_dims = 0
+    num_envs = 1
     # episode_lengths: ???
     # seed_steps: ???
     # bin_size: ???
