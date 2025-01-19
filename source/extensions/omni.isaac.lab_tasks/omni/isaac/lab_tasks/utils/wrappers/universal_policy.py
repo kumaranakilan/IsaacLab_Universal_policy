@@ -137,7 +137,7 @@ class UniversalPolicyWrapper(VecEnv):
     def step(self, actions: torch.Tensor):
         # TODO: check if the line below is needed
         assert actions.dtype == torch.float32
-        print("sim device: ", self.device)
+        # print("sim device: ", self.device)
         actions = actions.to(self.device)
         # TODO: this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
         # TODO: copy from the TensorWrapper code but be careful.

@@ -53,6 +53,7 @@ class UniversalPolicyTdmpc2():
     buffer_size = 1_000_000
     exp_name = 'default'
     # data_dir = ???
+    device='cuda'
 
     # planning
     mpc = True
@@ -111,5 +112,5 @@ class UniversalPolicyTdmpc2():
     action_dims = 0
     num_envs = 1
     # episode_lengths: ???
-    # seed_steps: ???
+    seed_steps = 5000 # TODO: this is a made up number. Make sure to verify it
     # bin_size: ???
