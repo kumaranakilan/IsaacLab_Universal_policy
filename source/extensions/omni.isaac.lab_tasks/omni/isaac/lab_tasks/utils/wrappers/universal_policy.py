@@ -30,11 +30,9 @@ from rsl_rl.env import VecEnv
 
 from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 
-# TODO: Only keep this wrapper and get rid of the other one
-# TODO: include the super class
-# TODO: delete tdmpc2/envs/wrappers/issac_lab_wrapper.py as it is redundant with the current file
+# TODO: include the super class. Not sure if this is relevant
 
-# TODO: probably move this file and the config file in this folder to a subfolder similar to the rsl_rl structure
+# TODO:  (Low priority) probably move this file and the config file in this folder to a subfolder similar to the rsl_rl structure
 # NOTE: ActionDTypeWrapper doesn't need to be copied over since the datatype is float32
 # NOTE: ActionRepeatWrapper doesn't need to be copied over since we are not repeating actions.
 # TODO: Since we are not repeating actions do we need to increase H?
@@ -110,7 +108,6 @@ class UniversalPolicyWrapper(VecEnv):
 
     def rand_act(self):
         # NOTE: IsaacLab env expects a torch tensor as action input
-        # TODO: also find out why action_space.sample() gives a random numpy array
         # NOTE: IsaacLab runs on 32 bit single precision so env.step  expects a float32 torch tensor
         # TODO: How do we handle the unbounded action space
         actions = torch.from_numpy(self.action_space.sample())
@@ -121,7 +118,7 @@ class UniversalPolicyWrapper(VecEnv):
             x = x.float()
         return x
 
-    def _obs_to_tensor(self, obs: torch.Tensor):
+    def _obs_to_tensor(self, obs: torch.Tensor | dict):
         if isinstance(obs, dict):
             for k in obs.keys():
                 obs[k] = self._try_f32_tensor(obs[k])
@@ -140,15 +137,17 @@ class UniversalPolicyWrapper(VecEnv):
         # print("sim device: ", self.device)
         actions = actions.to(self.device)
         # TODO: this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
-        # TODO: copy from the TensorWrapper code but be careful.
         # NOTE: ./rsl_rl/vecenv_wrapper.py enters a torch tensor in the step function 
         obs_dict, rew, terminated, truncated, extras = self.env.step(action=actions)
         # NOTE: You do not need to borrow the info variable because it is only used to calculate success. There is no episode success in this env.
-        # TODO: make sure you are using self._try_f32_tensor correctly below because it is custom code 
-        # return self._obs_to_tensor(obs), self._try_f32_tensor(reward), self._try_f32_tensor(done)
-        # TODO: claculate the correct definitions of the variables below. They are just a place holder for now
         # NOTE: do not copy the line 'if not self.unwrapped.cfg.is_finite_horizon:' from IsaacLab's vecenv_wrapper because we need access to both pieces of info for now. this might change
-        return obs_dict["policy"], rew, terminated, truncated, extras
+
+        obs = self._obs_to_tensor(obs_dict["policy"])
+        rew = self._obs_to_tensor(rew)
+        terminated = self._obs_to_tensor(terminated)
+        truncated = self._obs_to_tensor(truncated)
+
+        return obs, rew, terminated, truncated, extras
 
     def max_episode_length(self):
         return self.env.max_episode_length

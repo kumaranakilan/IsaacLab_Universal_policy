@@ -82,16 +82,18 @@ from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyTdmpc2
 # torch.backends.cudnn.deterministic = False
 # torch.backends.cudnn.benchmark = False
 
-# TODO: typecast the agent_cfg below
+# TODO: (Low priority) typecast the agent_cfg below
 @hydra_task_config(args_cli.task, "universal_policy_tdmpc2")
 def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg):
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
-    # TODO: Remove line below once you figure out how to deal with terminations
-    env_cfg.terminations.base_contact.params["sensor_cfg"].body_names = None
+    # TODO: (Highest priority) 1.) figure out if terminations can be turned off. Check by seeing if the terminations variable are all false. 2.) figure out if that is the right thing to do.
+    # NOTE: If you want to run off terminations comment out self.terminations.base_contact. ... in rough_env_cfg.py and base_contact = DoneTerm in velocity_env_cfg.py
+
+    print("env_cfg.terminations: ", env_cfg.terminations)
 
     agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli)
-    # TODO: change the cfg value as you need better compute
+    # TODO: (Low priority) change the num_envs value as you need better compute
     env_cfg.scene.num_envs = 8 # args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
     agent_cfg.max_iterations = (
         args_cli.max_iterations if args_cli.max_iterations is not None else agent_cfg.max_iterations
@@ -135,17 +137,15 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
         print_dict(video_kwargs, nesting=4)
         env = gym.wrappers.RecordVideo(env, **video_kwargs)
 
-    # TODO: make sure you understand the line below or at least run it so you know it 
-    # prints obs with env in the batch dimension
-
     # convert to single-agent instance if required by the RL algorithm
     if isinstance(env.unwrapped, DirectMARLEnv):
         env = multi_agent_to_single_agent(env)
 
     print("env_cfg.undesired_contacts: ", env_cfg.rewards.undesired_contacts)
     
+    # TODO: (medium priority) Figure out how to add video saving as it is likely needed for debugging
     # parse config
-    # TODO: agent_cfg is in the old agent specific config that was meant to be deleted. We can't have two configs. Reconsile this. cfg = UniversalPolicyTdmpc2() may or may not be the right way to do this. How does the other train.py for rsl_rl do this?
+    # TODO: (Low priority) agent_cfg is in the old agent specific config that was meant to be deleted. We can't have two configs. Reconsile this. cfg = UniversalPolicyTdmpc2() may or may not be the right way to do this. How does the other train.py for rsl_rl do this?
     cfg = UniversalPolicyTdmpc2()
     # TODO: (Low priority) All of the cfg modification operations below should probably replaced with parser like TDMPC does
     cfg.work_dir = os.path.join(cfg.work_dir, 'logs', cfg.task, str(cfg.seed), cfg.exp_name)

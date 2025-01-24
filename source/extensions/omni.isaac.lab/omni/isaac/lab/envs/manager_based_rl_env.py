@@ -144,7 +144,6 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
             if self.sim.has_rtx_sensors() and self.cfg.rerender_on_reset:
                 self.sim.render()
 
-    # TODO: Include an option in the function arguments below that swaps step 5 and 6.
     # Then in the isaaclab_online_trainer.py code get_observations on the 
     # UniversalPolicyWrapper wrapped environment. which I think will make a call to  
     # self.observation_manager.compute() in this file. This part is something I am not

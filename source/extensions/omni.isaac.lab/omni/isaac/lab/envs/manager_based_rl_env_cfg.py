@@ -42,7 +42,7 @@ class ManagerBasedRLEnvCfg(ManagerBasedEnvCfg):
     """
 
     swap_reset_order: bool = False
-    # TODO: Add doc string
+    # TODO: (Low priority) Add doc string
 
     episode_length_s: float = MISSING
     """Duration of an episode (in seconds).

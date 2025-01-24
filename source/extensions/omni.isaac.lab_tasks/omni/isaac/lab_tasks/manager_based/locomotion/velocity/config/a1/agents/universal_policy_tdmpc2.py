@@ -3,7 +3,7 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-# TODO: delete this file
+# TODO: (Low priority) delete this file
 
 from omni.isaac.lab.utils import configclass
 

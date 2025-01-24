@@ -112,5 +112,5 @@ class UniversalPolicyTdmpc2():
     action_dims = 0
     num_envs = 1
     # episode_lengths: ???
-    seed_steps = 500 # TODO: this is a made up number. Make sure to verify it
+    seed_steps = 1000 # TODO: this is a made up number. Make sure to verify it
     bin_size = 0.2
