@@ -30,7 +30,7 @@ For instance, to wrap an environment in the `Stable-Baselines3`_ wrapper, you ca
 .. _RSL-RL: https://github.com/leggedrobotics/rsl_rl
 .. _skrl: https://github.com/Toni-SM/skrl
 .. _Stable-Baselines3: https://github.com/DLR-RM/stable-baselines3
-.. _universal_policy: TODO: add github link
+.. _universal_policy: TODO (Low priority): add github link
 """
 
 from .universal_policy import UniversalPolicyWrapper

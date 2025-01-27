@@ -30,8 +30,6 @@ from rsl_rl.env import VecEnv
 
 from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 
-# TODO: include the super class. Not sure if this is relevant
-
 # TODO:  (Low priority) probably move this file and the config file in this folder to a subfolder similar to the rsl_rl structure
 # NOTE: ActionDTypeWrapper doesn't need to be copied over since the datatype is float32
 # NOTE: ActionRepeatWrapper doesn't need to be copied over since we are not repeating actions.
@@ -44,6 +42,8 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # TODO: which logger are we using and are we using wandb
 
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
+
+# TODO: (Low priority) Remove VecEnv. Actually it is better to have noo super class. Make sure all of VecEnv functions transfered correctly to this class
 class UniversalPolicyWrapper(VecEnv):
     def __init__(self, env: ManagerBasedRLEnv | DirectRLEnv):
         # check that input is valid

@@ -12,7 +12,6 @@ import sys
 
 from omni.isaac.lab.app import AppLauncher
 
-# TODO: make sure the stuff below is correct:
 from tdmpc2.trainer import isaaclab_online_trainer
 from tdmpc2.common.logger import Logger
 from tdmpc2.tdmpc2 import TDMPC2
@@ -29,7 +28,6 @@ parser.add_argument("--video_interval", type=int, default=2000, help="Interval b
 parser.add_argument("--num_envs", type=int, default=None, help="Number of environments to simulate.")
 parser.add_argument("--task", type=str, default=None, help="Name of the task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
-parser.add_argument("--max_iterations", type=int, default=None, help="RL Policy training iterations.")
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
 # append AppLauncher cli args
@@ -89,12 +87,12 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     # override configurations with non-hydra CLI arguments
     # TODO: (Highest priority) 1.) figure out if terminations can be turned off. Check by seeing if the terminations variable are all false. 2.) figure out if that is the right thing to do.
     # NOTE: If you want to run off terminations comment out self.terminations.base_contact. ... in rough_env_cfg.py and base_contact = DoneTerm in velocity_env_cfg.py
-
+    args_cli.num_envs = 8 # TODO: (Low priority) switch to specifiying this through command line
     print("env_cfg.terminations: ", env_cfg.terminations)
 
     agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli)
     # TODO: (Low priority) change the num_envs value as you need better compute
-    env_cfg.scene.num_envs = 8 # args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
+    env_cfg.scene.num_envs = args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
     agent_cfg.max_iterations = (
         args_cli.max_iterations if args_cli.max_iterations is not None else agent_cfg.max_iterations
     )
@@ -158,6 +156,13 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     cfg.task_title = cfg.task.replace("-", " ").title()
     print("cfg.action_dim: ", env.action_space.sample().shape)
     cfg.action_dim = env.action_space.sample().shape[-1]
+
+    # Divide the number of steps for training by the number of envs
+    cfg.steps = int(cfg.single_env_steps/env_cfg.scene.num_envs)
+    # Multiply the number of updates for training by the number of envs
+    cfg.num_updates = cfg.num_updates*env_cfg.scene.num_envs
+    # Divide the eval_freq for training by the number of envs
+    cfg.eval_freq = cfg.eval_freq/env_cfg.scene.num_envs
 
     env = UniversalPolicyWrapper(env)
     print("env.max_episode_length: ", env.max_episode_length)

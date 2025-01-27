@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import RslRlOnPolicyRunnerCfg
 
-# TODO: modify this whole file for universal policy
+# TODO: (Low priority) modify this whole file for universal policy
 def add_rsl_rl_args(parser: argparse.ArgumentParser):
     """Add RSL-RL arguments to the parser.
 
@@ -48,8 +48,8 @@ def update_rsl_rl_cfg(agent_cfg: RslRlOnPolicyRunnerCfg, args_cli: argparse.Name
     Returns:
         The updated configuration for RSL-RL agent based on inputs.
     """
-    # TODO: obivously change agent config type
-    # TODO: replace this with the proper command line override
+    # TODO: (Low priority) obivously change agent config type
+    # TODO: (Low priority) replace this with the proper command line override
     # # override the default configuration with CLI arguments
     # if hasattr(args_cli, "seed") and args_cli.seed is not None:
     #     # randomly sample a seed if seed = -1

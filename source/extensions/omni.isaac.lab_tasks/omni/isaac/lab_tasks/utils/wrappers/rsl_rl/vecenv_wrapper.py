@@ -85,6 +85,8 @@ class RslRlVecEnvWrapper(VecEnv):
             self.num_privileged_obs = gym.spaces.flatdim(self.unwrapped.single_observation_space["critic"])
         else:
             self.num_privileged_obs = 0
+
+        # TODO: (high priority) Set the self.bounded_action_space = self.scene. whatever the action limits are after fitting it in a box. By default set self.bounded_action_space to None
         # reset at the start since the RSL-RL runner does not call reset
         self.env.reset()
 
@@ -118,6 +120,9 @@ class RslRlVecEnvWrapper(VecEnv):
     @property
     def action_space(self) -> gym.Space:
         """Returns the :attr:`Env` :attr:`action_space`."""
+        if self.bounded_action_space != None:
+            # TODO: (high priority) return self.bounded_action_space
+            pass
         return self.env.action_space
 
     @classmethod
