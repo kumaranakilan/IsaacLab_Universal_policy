@@ -171,7 +171,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     cfg.num_envs = env_cfg.scene.num_envs
 
     agent = TDMPC2(cfg)
-    # TODO: I don't know if the original tdmpc2 training code disables MPC for the initial iterations or not. If it is make sure the functionality is still on.
+    # TODO: (Medium priority) I don't know if the original tdmpc2 training code disables MPC for the initial iterations or not. If it is make sure the functionality is still on.
     trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=agent, buffer=Buffer(cfg), logger=Logger(cfg))
     trainer.train()
     env.close()

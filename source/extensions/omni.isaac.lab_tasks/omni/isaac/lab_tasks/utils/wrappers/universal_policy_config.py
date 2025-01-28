@@ -14,7 +14,6 @@ from omni.isaac.lab_tasks.utils.wrappers.rsl_rl import (
 from tdmpc2.common.parser import parse_cfg
 
 # NOTE: The reason the config was moved here is because it is not specific to any env but to all of tdmpc2
-# TODO: check every hyperparam and where it is used. Add description
 @configclass
 class UniversalPolicyTdmpc2():
     # TODO: print out on the tdmpc2 side and see which config values are changed during 
