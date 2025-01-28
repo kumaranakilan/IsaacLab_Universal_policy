@@ -150,7 +150,7 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
     # UniversalPolicyWrapper wrapped environment. which I think will make a call to  
     # self.observation_manager.compute() in this file. This part is something I am not
     # sure about. Verify it before proceeding !!!!
-    def step(self, action: torch.Tensor, swap_reset_order=False) -> VecEnvStepReturn:
+    def step(self, action: torch.Tensor) -> VecEnvStepReturn:
         """Execute one time-step of the environment's dynamics and reset terminated environments.
 
         Unlike the :class:`ManagerBasedEnv.step` class, the function performs the following operations:
@@ -219,6 +219,7 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
 
          # -- reset envs that terminated/timed-out and log the episode information (if swap)
         if self.cfg.swap_reset_order:
+            # TODO: Check that this is executed
             self._ordered_reset()
 
         # return observations, rewards, resets and extras
