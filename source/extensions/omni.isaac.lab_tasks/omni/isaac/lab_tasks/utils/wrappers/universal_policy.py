@@ -33,13 +33,13 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # TODO:  (Low priority) probably move this file and the config file in this folder to a subfolder similar to the rsl_rl structure
 # NOTE: ActionDTypeWrapper doesn't need to be copied over since the datatype is float32
 # NOTE: ActionRepeatWrapper doesn't need to be copied over since we are not repeating actions.
-# TODO: Since we are not repeating actions do we need to increase H?
+# TODO: (Mid priority) Since we are not repeating actions do we need to increase H?
 # NOTE: tdmpc2 TimeStepToGymWrapper doesn't need to be copied over since the observation_space, action_space and max_episode_steps are all handled by the IsaacLab env
 # NOTE: ExtendedTimeStepWrapper doesn't need to be copied over since it unwraps to action repeater.
 
-# TODO: just because an operation is on torch does not mean it is on GPU. Make sure that all new tensors upon creation are on the same GPU.
+# TODO: (Mid priority) just because an operation is on torch does not mean it is on GPU. Make sure that all new tensors upon creation are on the same GPU.
 
-# TODO: which logger are we using and are we using wandb
+# TODO: (Mid priority) which logger are we using and are we using wandb
 
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
 
@@ -109,7 +109,6 @@ class UniversalPolicyWrapper(VecEnv):
     def rand_act(self):
         # NOTE: IsaacLab env expects a torch tensor as action input
         # NOTE: IsaacLab runs on 32 bit single precision so env.step  expects a float32 torch tensor
-        # TODO: How do we handle the unbounded action space
         actions = torch.from_numpy(self.action_space.sample())
         return self._try_f32_tensor(actions)
 	
@@ -132,11 +131,11 @@ class UniversalPolicyWrapper(VecEnv):
         return self._obs_to_tensor(self.env.reset())
     
     def step(self, actions: torch.Tensor):
-        # TODO: check if the line below is needed
+        # TODO (Mid priority): check if the line below is needed
         assert actions.dtype == torch.float32
         # print("sim device: ", self.device)
         actions = actions.to(self.device)
-        # TODO: this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
+        # TODO: (High priority) this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
         # NOTE: ./rsl_rl/vecenv_wrapper.py enters a torch tensor in the step function 
         obs_dict, rew, terminated, truncated, extras = self.env.step(action=actions)
         # NOTE: You do not need to borrow the info variable because it is only used to calculate success. There is no episode success in this env.

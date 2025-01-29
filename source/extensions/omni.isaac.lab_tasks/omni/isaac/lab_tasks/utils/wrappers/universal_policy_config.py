@@ -16,7 +16,7 @@ from tdmpc2.common.parser import parse_cfg
 # NOTE: The reason the config was moved here is because it is not specific to any env but to all of tdmpc2
 @configclass
 class UniversalPolicyTdmpc2():
-    # TODO: print out on the tdmpc2 side and see which config values are changed during 
+    # TODO: (Mid priority) print out on the tdmpc2 side and see which config values are changed during 
     # runtime not by flags but by other stuff in the program
     seed: int = 1
     experiment_name: str = "tdmpc2_a1"
@@ -46,7 +46,7 @@ class UniversalPolicyTdmpc2():
     lr = 3e-4 #  Learning rate
     enc_lr_scale = 0.3 # The lr for the encoder is multiplied by enc_lr_scale
     grad_clip_norm = 20 # This clipping is used to prevent unstable gradients in BPTT
-    tau = 0.01 # TODO: Find out what this is
+    tau = 0.01 # TODO: (Mid priority) Find out what this is
     discount_denom = 5 # TODO: (Low priority) Find out what this is
     discount_min = 0.95 # TODO: (Low priority) Find out what this is
     discount_max = 0.995 # TODO: (Low priority) Find out what this is
@@ -104,12 +104,12 @@ class UniversalPolicyTdmpc2():
     task_title = "" # Obvious
     multitask = False
     # tasks: ???
-    obs_shape = 0 # TODO: this is not a correct default value obs_shape. It should be a shape.
-    action_dim = 0 # TODO: this is not a correct default value
-    episode_length = 0 # TODO: this is not a correct default value
+    obs_shape = 0 # TODO: (Low priority) this is not a correct default value obs_shape. It should be a shape.
+    action_dim = 0 # TODO: (Low priority) this is not a correct default value
+    episode_length = 0 # TODO: (Low priority) this is not a correct default value
     # obs_shapes: ???
-    action_dims = 0 # TODO: this is not a correct default value
-    num_envs = 1 # TODO: How is this routed again???
+    action_dims = 0 # TODO: (Low priority) this is not a correct default value
+    num_envs = 1 # TODO: (Low priority) How is this routed again???
     # episode_lengths: ???
-    seed_steps = 1000 # TODO: this is a made up number. Make sure to verify it
+    seed_steps = 1000 
     bin_size = 0.2 # TODO: (Low priority) Find out what this is

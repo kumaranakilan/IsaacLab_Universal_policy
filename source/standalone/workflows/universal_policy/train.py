@@ -74,7 +74,7 @@ from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyWrapper
 from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyTdmpc2
 
 
-# TODO: understand what the lines below are and then import them. Also make sure to check why their values are T or F
+# TODO: (Mid priority) understand what the lines below are and then import them. Also make sure to check why their values are T or F
 # torch.backends.cuda.matmul.allow_tf32 = True
 # torch.backends.cudnn.allow_tf32 = True
 # torch.backends.cudnn.deterministic = False
