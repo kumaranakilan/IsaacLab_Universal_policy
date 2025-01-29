@@ -138,7 +138,7 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
     Operations - MDP
     """
     def _ordered_reset(self):
-        # TODO: test this part. You haven't tested it.
+        # TODO: (high priority) test this part. You haven't tested it.
         reset_env_ids = self.reset_buf.nonzero(as_tuple=False).squeeze(-1)
         if len(reset_env_ids) > 0:
             self._reset_idx(reset_env_ids)
@@ -219,7 +219,7 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
 
          # -- reset envs that terminated/timed-out and log the episode information (if swap)
         if self.cfg.swap_reset_order:
-            # TODO: Check that this is executed
+            # TODO: (high priority) Check that this is executed
             self._ordered_reset()
 
         # return observations, rewards, resets and extras
