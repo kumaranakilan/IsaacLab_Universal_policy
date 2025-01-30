@@ -85,8 +85,7 @@ from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyTdmpc2
 def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agent_cfg):
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
-    # TODO: (Highest priority) 1.) figure out if terminations can be turned off. Check by seeing if the terminations variable are all false. 2.) figure out if that is the right thing to do.
-    # NOTE: If you want to run off terminations comment out self.terminations.base_contact. ... in rough_env_cfg.py and base_contact = DoneTerm in velocity_env_cfg.py
+    # NOTE: If you want to turn off terminations comment out self.terminations.base_contact. ... in rough_env_cfg.py and base_contact = DoneTerm in velocity_env_cfg.py
     args_cli.num_envs = 8 # TODO: (Low priority) switch to specifiying this through command line
     print("env_cfg.terminations: ", env_cfg.terminations)
 
