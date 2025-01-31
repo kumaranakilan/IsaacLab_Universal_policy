@@ -86,6 +86,9 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
 
         # TODO: (high priority) set the self. whatever action limits variable here
 
+        print("self.scene.articulation._data.soft_joint_pos_limits: ", self.scene.articulations['robot']._data.soft_joint_pos_limits.shape)
+        assert False
+
         print("[INFO]: Completed setting up the environment...")
 
     """

@@ -1051,6 +1051,8 @@ class Articulation(AssetBase):
         self._data.soft_joint_pos_limits[..., 0] = joint_pos_mean - 0.5 * joint_pos_range * soft_limit_factor
         self._data.soft_joint_pos_limits[..., 1] = joint_pos_mean + 0.5 * joint_pos_range * soft_limit_factor
 
+        print("self._data.soft_joint_pos_limits: ", self._data.soft_joint_pos_limits.shape)
+        
         # create buffers to store processed actions from actuator models
         self._joint_pos_target_sim = torch.zeros_like(self._data.joint_pos_target)
         self._joint_vel_target_sim = torch.zeros_like(self._data.joint_pos_target)

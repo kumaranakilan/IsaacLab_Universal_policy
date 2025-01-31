@@ -20,6 +20,7 @@ class UnitreeA1RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         super().__post_init__()
 
         self.scene.robot = UNITREE_A1_CFG.replace(prim_path="{ENV_REGEX_NS}/Robot")
+        print("self.scene.robot kumaran: ", self.scene.robot)
         self.scene.height_scanner.prim_path = "{ENV_REGEX_NS}/Robot/trunk"
         # scale down the terrains because the robot is small
         self.scene.terrain.terrain_generator.sub_terrains["boxes"].grid_height_range = (0.025, 0.1)
@@ -57,7 +58,7 @@ class UnitreeA1RoughEnvCfg(LocomotionVelocityRoughEnvCfg):
         self.rewards.dof_acc_l2.weight = -2.5e-7
 
         # terminations
-        self.terminations.base_contact.params["sensor_cfg"].body_names = "trunk"
+        # self.terminations.base_contact.params["sensor_cfg"].body_names = "trunk"
 
 
 @configclass
