@@ -84,11 +84,6 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
         # -- set the framerate of the gym video recorder wrapper so that the playback speed of the produced video matches the simulation
         self.metadata["render_fps"] = 1 / self.step_dt
 
-        # TODO: (high priority) set the self. whatever action limits variable here
-
-        print("self.scene.articulation._data.soft_joint_pos_limits: ", self.scene.articulations['robot']._data.soft_joint_pos_limits.shape)
-        assert False
-
         print("[INFO]: Completed setting up the environment...")
 
     """
@@ -222,7 +217,6 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
 
          # -- reset envs that terminated/timed-out and log the episode information (if swap)
         if self.cfg.swap_reset_order:
-            # TODO: (high priority) Check that this is executed
             self._ordered_reset()
 
         # return observations, rewards, resets and extras
@@ -326,6 +320,19 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
         # action space (unbounded since we don't impose any limits)
         action_dim = sum(self.action_manager.action_term_dim)
         self.single_action_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(action_dim,))
+        print("action_dim: ", action_dim)
+
+        # TODO: (high priority) set the self. whatever action limits variable here
+        print("self.scene.articulation._data.soft_joint_pos_limits: ", self.scene.articulations['robot']._data.soft_joint_pos_limits[0])
+
+        single_robot_low = self.scene.articulations['robot']._data.soft_joint_pos_limits[0, :, 0].cpu().detach().numpy()
+        single_robot_high = self.scene.articulations['robot']._data.soft_joint_pos_limits[0, :, 1].cpu().detach().numpy()
+
+        self.single_robot_low = single_robot_low
+        self.single_robot_high = single_robot_high
+
+        self.single_action_space_constrained = gym.spaces.Box(low=single_robot_low, high=single_robot_high, shape=(action_dim,))
+        self.action_space_constrained = gym.vector.utils.batch_space(self.single_action_space_constrained, self.num_envs)
 
         # batch the spaces for vectorized environments
         self.observation_space = gym.vector.utils.batch_space(self.single_observation_space, self.num_envs)

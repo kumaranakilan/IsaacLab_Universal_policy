@@ -59,6 +59,10 @@ class UniversalPolicyWrapper(VecEnv):
         self.num_envs = self.unwrapped.num_envs
         self.device = self.unwrapped.device
         self.max_episode_length = self.unwrapped.max_episode_length
+
+        single_action_space = gym.spaces.Box(low=-1, high=1, shape=(self.env.action_space.shape[-1],))
+        self.batch_action_space = gym.vector.utils.batch_space(single_action_space, self.num_envs)
+
         if hasattr(self.unwrapped, "action_manager"):
             self.num_actions = self.unwrapped.action_manager.total_action_dim
         else:
@@ -78,6 +82,10 @@ class UniversalPolicyWrapper(VecEnv):
         else:
             self.num_privileged_obs = 0
         # reset at the start since the RSL-RL runner does not call reset
+
+        self.single_robot_low = torch.from_numpy(self.env.env.single_robot_low).to(self.device).to(torch.float32)
+        self.single_robot_high = torch.from_numpy(self.env.env.single_robot_high).to(self.device).to(torch.float32)
+        
         self.env.reset()
 
     """
@@ -95,7 +103,7 @@ class UniversalPolicyWrapper(VecEnv):
     @property
     def action_space(self) -> gym.Space:
         """Returns the :attr:`Env` :attr:`action_space`."""
-        return self.env.action_space
+        return self.batch_action_space
     
 
     def get_observations(self) -> tuple[torch.Tensor, dict]:
@@ -135,6 +143,12 @@ class UniversalPolicyWrapper(VecEnv):
         assert actions.dtype == torch.float32
         # print("sim device: ", self.device)
         actions = actions.to(self.device)
+
+        # TODO: (double check the logic for the action space bounding)
+        action_bound_diff = (self.single_robot_high - self.single_robot_low).unsqueeze(0)
+        action_bound_mean = ((self.single_robot_high + self.single_robot_low)/2).unsqueeze(0)
+        actions = ((action_bound_diff/2)*actions)+action_bound_mean
+
         # TODO: (High priority) this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
         # NOTE: ./rsl_rl/vecenv_wrapper.py enters a torch tensor in the step function 
         obs_dict, rew, terminated, truncated, extras = self.env.step(action=actions)

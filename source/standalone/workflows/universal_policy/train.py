@@ -89,28 +89,34 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     args_cli.num_envs = 8 # TODO: (Low priority) switch to specifiying this through command line
     print("env_cfg.terminations: ", env_cfg.terminations)
 
-    agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli)
+    # agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli) # NOTE: this line can route the config properly
     # TODO: (Low priority) change the num_envs value as you need better compute
     env_cfg.scene.num_envs = args_cli.num_envs if args_cli.num_envs is not None else env_cfg.scene.num_envs
-    agent_cfg.max_iterations = (
-        args_cli.max_iterations if args_cli.max_iterations is not None else agent_cfg.max_iterations
-    )
+    # agent_cfg.max_iterations = (
+    #     args_cli.max_iterations if args_cli.max_iterations is not None else agent_cfg.max_iterations
+    # )
+    print("agent_cfg: ", agent_cfg)
+
+     # TODO: (Low priority) agent_cfg is in the old agent specific config that was meant to be deleted. We can't have two configs. Reconsile this. cfg = UniversalPolicyTdmpc2() may or may not be the right way to do this. How does the other train.py for rsl_rl do this?
+    cfg = UniversalPolicyTdmpc2()
 
     # set the environment seed
     # note: certain randomizations occur in the environment initialization so we set the seed here
-    env_cfg.seed = agent_cfg.seed
+    env_cfg.seed = cfg.seed
     env_cfg.sim.device = args_cli.device if args_cli.device is not None else env_cfg.sim.device
 
     env_cfg.swap_reset_order = True
 
     # specify directory for logging experiments
-    log_root_path = os.path.join("logs", "universal_policy", agent_cfg.experiment_name)
+    # log_root_path = os.path.join("logs", "universal_policy", agent_cfg.experiment_name)
+    log_root_path = os.path.join("logs", "universal_policy", 'experiment_name')
     log_root_path = os.path.abspath(log_root_path)
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
     # specify directory for logging runs: {time-stamp}_{run_name}
     log_dir = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    if agent_cfg.run_name:
-        log_dir += f"_{agent_cfg.run_name}"
+    # if agent_cfg.run_name:
+    #     log_dir += f"_{agent_cfg.run_name}"
+    log_dir += f"_run_name"
     log_dir = os.path.join(log_root_path, log_dir)
 
     print("env_cfg.scene.num_envs: ", env_cfg.scene.num_envs)
@@ -119,8 +125,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     env = gym.make(args_cli.task, cfg=env_cfg, render_mode="rgb_array" if args_cli.video else None)
 
     # save resume path before creating a new log_dir
-    if agent_cfg.resume:
-        resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
+    # if agent_cfg.resume:
+    #     resume_path = get_checkpoint_path(log_root_path, agent_cfg.load_run, agent_cfg.load_checkpoint)
 
     # wrap for video recording
     if args_cli.video:
@@ -142,8 +148,6 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     
     # TODO: (medium priority) Figure out how to add video saving as it is likely needed for debugging
     # parse config
-    # TODO: (Low priority) agent_cfg is in the old agent specific config that was meant to be deleted. We can't have two configs. Reconsile this. cfg = UniversalPolicyTdmpc2() may or may not be the right way to do this. How does the other train.py for rsl_rl do this?
-    cfg = UniversalPolicyTdmpc2()
     # TODO: (Low priority) All of the cfg modification operations below should probably replaced with parser like TDMPC does
     cfg.work_dir = os.path.join(cfg.work_dir, 'logs', cfg.task, str(cfg.seed), cfg.exp_name)
     # TODO: (Low priority) this is probably not the best way to get the shape. Change it later.
