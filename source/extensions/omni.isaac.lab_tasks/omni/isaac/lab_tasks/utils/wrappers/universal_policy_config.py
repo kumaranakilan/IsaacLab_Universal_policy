@@ -16,7 +16,6 @@ from tdmpc2.common.parser import parse_cfg
 # NOTE: The reason the config was moved here is because it is not specific to any env but to all of tdmpc2
 @configclass
 class UniversalPolicyTdmpc2():
-    # TODO: (Mid priority) print out on the tdmpc2 side and see which config values are changed during 
     # runtime not by flags but by other stuff in the program
     seed: int = 1
     experiment_name: str = "tdmpc2_a1"

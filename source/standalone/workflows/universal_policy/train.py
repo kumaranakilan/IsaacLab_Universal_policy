@@ -74,7 +74,7 @@ from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyWrapper
 from omni.isaac.lab_tasks.utils.wrappers import UniversalPolicyTdmpc2
 
 
-# TODO: (Mid priority) understand what the lines below are and then import them. Also make sure to check why their values are T or F
+# TODO: (Low priority) understand what the lines below are and then import them. Also make sure to check why their values are T or F
 # torch.backends.cuda.matmul.allow_tf32 = True
 # torch.backends.cudnn.allow_tf32 = True
 # torch.backends.cudnn.deterministic = False
@@ -174,7 +174,6 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     cfg.num_envs = env_cfg.scene.num_envs
 
     agent = TDMPC2(cfg)
-    # TODO: (Medium priority) I don't know if the original tdmpc2 training code disables MPC for the initial iterations or not. If it is make sure the functionality is still on.
     trainer = isaaclab_online_trainer.OnlineTrainer(cfg=cfg, env=env, agent=agent, buffer=Buffer(cfg), logger=Logger(cfg))
     trainer.train()
     env.close()
