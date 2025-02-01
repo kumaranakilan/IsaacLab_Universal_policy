@@ -43,7 +43,7 @@ class RslRlVecEnvWrapper(VecEnv):
         https://github.com/leggedrobotics/rsl_rl/blob/master/rsl_rl/env/vec_env.py
     """
 
-    def __init__(self, env: ManagerBasedRLEnv | DirectRLEnv):
+    def __init__(self, env: ManagerBasedRLEnv | DirectRLEnv, constrain_action_space = False):
         """Initializes the wrapper.
 
         Note:
@@ -86,7 +86,11 @@ class RslRlVecEnvWrapper(VecEnv):
         else:
             self.num_privileged_obs = 0
 
-        # TODO: (high priority) Set the self.bounded_action_space = self.scene. whatever the action limits are after fitting it in a box. By default set self.bounded_action_space to None
+        # NOTE: PPO doesn't interact with the action space at all
+        if constrain_action_space:
+            self.bounded_action_space = self.env.env.action_space_constrained
+        else:
+            self.bounded_action_space = None
         # reset at the start since the RSL-RL runner does not call reset
         self.env.reset()
 
@@ -121,8 +125,8 @@ class RslRlVecEnvWrapper(VecEnv):
     def action_space(self) -> gym.Space:
         """Returns the :attr:`Env` :attr:`action_space`."""
         if self.bounded_action_space != None:
-            # TODO: (high priority) return self.bounded_action_space
-            pass
+            # NOTE: PPO doesn't interact with the action space at all
+            return self.bounded_action_space
         return self.env.action_space
 
     @classmethod
