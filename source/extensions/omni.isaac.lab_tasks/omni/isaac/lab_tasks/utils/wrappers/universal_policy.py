@@ -33,17 +33,17 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 # TODO:  (Low priority) probably move this file and the config file in this folder to a subfolder similar to the rsl_rl structure
 # NOTE: ActionDTypeWrapper doesn't need to be copied over since the datatype is float32
 # NOTE: ActionRepeatWrapper doesn't need to be copied over since we are not repeating actions.
-# TODO: (Mid priority) Since we are not repeating actions do we need to increase H?
+# TODO: (Low priority) Since we are not repeating actions do we need to increase H?
 # NOTE: tdmpc2 TimeStepToGymWrapper doesn't need to be copied over since the observation_space, action_space and max_episode_steps are all handled by the IsaacLab env
 # NOTE: ExtendedTimeStepWrapper doesn't need to be copied over since it unwraps to action repeater.
 
-# TODO: (Mid priority) just because an operation is on torch does not mean it is on GPU. Make sure that all new tensors upon creation are on the same GPU.
+# TODO: (Low priority) just because an operation is on torch does not mean it is on GPU. Make sure that all new tensors upon creation are on the same GPU.
 
 # TODO: (Mid priority) which logger are we using and are we using wandb
 
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
 
-# TODO: (Low priority) Remove VecEnv. Actually it is better to have noo super class. Make sure all of VecEnv functions transfered correctly to this class
+# TODO: (Low priority) Remove VecEnv. Actually it is better to have no super class. Make sure all of VecEnv functions transfered correctly to this class
 class UniversalPolicyWrapper(VecEnv):
     def __init__(self, env: ManagerBasedRLEnv | DirectRLEnv):
         # check that input is valid
@@ -139,12 +139,10 @@ class UniversalPolicyWrapper(VecEnv):
         return self._obs_to_tensor(self.env.reset())
     
     def step(self, actions: torch.Tensor):
-        # TODO (Mid priority): check if the line below is needed
+        # TODO (Low priority): check if the line below is needed
         assert actions.dtype == torch.float32
-        # print("sim device: ", self.device)
         actions = actions.to(self.device)
 
-        # TODO (Mid priority): double check the logic for the action space bounding
         action_bound_diff = (self.single_robot_high - self.single_robot_low).unsqueeze(0)
         action_bound_mean = ((self.single_robot_high + self.single_robot_low)/2).unsqueeze(0)
         actions = ((action_bound_diff/2)*actions)+action_bound_mean
