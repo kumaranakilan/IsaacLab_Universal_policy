@@ -136,7 +136,7 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
     Operations - MDP
     """
     def _ordered_reset(self):
-        # TODO: (high priority) test this part by making sure the baseline works as expected. You can do this by undoing the code changes and checking if it works properly
+        # NOTE: I tested this by undoing the code changes and checking if there was a performance change and there wasn't
         reset_env_ids = self.reset_buf.nonzero(as_tuple=False).squeeze(-1)
         if len(reset_env_ids) > 0:
             self._reset_idx(reset_env_ids)
