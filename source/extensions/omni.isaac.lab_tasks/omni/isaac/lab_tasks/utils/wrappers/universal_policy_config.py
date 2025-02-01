@@ -111,5 +111,5 @@ class UniversalPolicyTdmpc2():
     action_dims = 0 # TODO: (Low priority) this is not a correct default value
     num_envs = 1 # TODO: (Low priority) How is this routed again???
     # episode_lengths: ???
-    seed_steps = 1000 
+    seed_steps = 999 
     bin_size = 0.2 # TODO: (Low priority) Find out what this is
