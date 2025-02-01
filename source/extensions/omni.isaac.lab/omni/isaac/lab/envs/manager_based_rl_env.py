@@ -320,10 +320,6 @@ class ManagerBasedRLEnv(ManagerBasedEnv, gym.Env):
         # action space (unbounded since we don't impose any limits)
         action_dim = sum(self.action_manager.action_term_dim)
         self.single_action_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=(action_dim,))
-        print("action_dim: ", action_dim)
-
-        # TODO: (high priority) set the self. whatever action limits variable here
-        print("self.scene.articulation._data.soft_joint_pos_limits: ", self.scene.articulations['robot']._data.soft_joint_pos_limits[0])
 
         single_robot_low = self.scene.articulations['robot']._data.soft_joint_pos_limits[0, :, 0].cpu().detach().numpy()
         single_robot_high = self.scene.articulations['robot']._data.soft_joint_pos_limits[0, :, 1].cpu().detach().numpy()

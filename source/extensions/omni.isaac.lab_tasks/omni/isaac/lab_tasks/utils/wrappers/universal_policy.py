@@ -144,12 +144,11 @@ class UniversalPolicyWrapper(VecEnv):
         # print("sim device: ", self.device)
         actions = actions.to(self.device)
 
-        # TODO: (double check the logic for the action space bounding)
+        # TODO (Mid priority): double check the logic for the action space bounding
         action_bound_diff = (self.single_robot_high - self.single_robot_low).unsqueeze(0)
         action_bound_mean = ((self.single_robot_high + self.single_robot_low)/2).unsqueeze(0)
         actions = ((action_bound_diff/2)*actions)+action_bound_mean
 
-        # TODO: (High priority) this is where the -1, +1 clamping of tdmpc2 should be handled. Also make sure that if the expected action is between -1 and +1 the output action is in the same range
         # NOTE: ./rsl_rl/vecenv_wrapper.py enters a torch tensor in the step function 
         obs_dict, rew, terminated, truncated, extras = self.env.step(action=actions)
         # NOTE: You do not need to borrow the info variable because it is only used to calculate success. There is no episode success in this env.
