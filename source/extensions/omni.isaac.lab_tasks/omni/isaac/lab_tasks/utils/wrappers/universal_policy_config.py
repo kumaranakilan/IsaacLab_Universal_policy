@@ -40,6 +40,7 @@ class UniversalPolicyTdmpc2():
     batch_size = 256 # training batch size
     reward_coef = 0.1 # the reward_coef is used in weighing the loss
     value_coef = 0.1 # The value_coef is used in weighing the loss
+    terminated_coef = 0.1 # termination loss coefficient (float)
     consistency_coef = 20 # The consistency_coef is used in weighing the loss
     rho = 0.5 # rho is the time component weight used in the Q loss
     lr = 3e-4 #  Learning rate
@@ -110,5 +111,5 @@ class UniversalPolicyTdmpc2():
     action_dims = 0 # TODO: (Low priority) this is not a correct default value
     num_envs = 1 # TODO: (Low priority) How is this routed again???
     # episode_lengths: ???
-    seed_steps = 999 
+    seed_steps = 100 
     bin_size = 0.2 # TODO: (Low priority) Find out what this is
