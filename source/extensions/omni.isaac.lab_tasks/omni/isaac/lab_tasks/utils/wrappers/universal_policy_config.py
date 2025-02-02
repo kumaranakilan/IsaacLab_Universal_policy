@@ -34,8 +34,10 @@ class UniversalPolicyTdmpc2():
     eval_freq = 50000 # This frequency will be further divided by the number of envs in train.py for now and later in the cfg parser to be written.
 
     # training
-    single_env_steps = 6_000_000 # NOTE: This should override steps when not not. Calc: steps = single_env_steps/num_envs. This code is now in the train.py and will eventually be moved to the parser.
+    single_env_steps = 6_000_000 # NOTE: This should override steps when not single env. Calc: steps = single_env_steps/num_envs. This code is now in the train.py and will eventually be moved to the parser.
     steps = 1_000_000 # This variable is used by tdmpc2's code. single_env_steps is used to calculate steps
+    single_env_plan2explore_pretrain_time = 2_000_000
+    plan2explore_pretrain_time = 2_000_000 # This variable is used by tdmpc2's code. It will be overriden in train.py.
     num_updates = 1 # Default number of updates when there is just one environment
     batch_size = 256 # training batch size
     reward_coef = 0.1 # the reward_coef is used in weighing the loss
@@ -45,12 +47,14 @@ class UniversalPolicyTdmpc2():
     rho = 0.5 # rho is the time component weight used in the Q loss
     lr = 3e-4 #  Learning rate
     enc_lr_scale = 0.3 # The lr for the encoder is multiplied by enc_lr_scale
+    ensemble_lr_scale = 1.0 # NOTE: Play with this param during hyperparam tuning
     grad_clip_norm = 20 # This clipping is used to prevent unstable gradients in BPTT
     tau = 0.01 # TODO: (Mid priority) Find out what this is
     discount_denom = 5 # TODO: (Low priority) Find out what this is
     discount_min = 0.95 # TODO: (Low priority) Find out what this is
     discount_max = 0.995 # TODO: (Low priority) Find out what this is
     buffer_size = 1_000_000 # Number of state action pairs the can be stored by the buffer
+    plan2explore = True
     exp_name = 'default' # TODO: (Low priority) Find out what this is
     device='cuda' # Obvious
 
@@ -84,6 +88,7 @@ class UniversalPolicyTdmpc2():
     latent_dim = 512 # Obvious
     task_dim = 96 # Obvious
     num_q = 5 # Obvious
+    num_pred_ensemble = 5 # Obvious
     dropout = 0.01 # Obvious
     simnorm_dim = 8 # Obvious
 

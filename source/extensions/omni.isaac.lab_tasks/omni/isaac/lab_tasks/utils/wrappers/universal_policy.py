@@ -39,8 +39,6 @@ from omni.isaac.lab.envs import DirectRLEnv, ManagerBasedRLEnv
 
 # TODO: (Low priority) just because an operation is on torch does not mean it is on GPU. Make sure that all new tensors upon creation are on the same GPU.
 
-# TODO: (Mid priority) which logger are we using and are we using wandb
-
 # NOTE this wrapper is a mix of RslRlVecEnvWrapper and TensorWrapper
 
 # TODO: (Low priority) Remove VecEnv. Actually it is better to have no super class. Make sure all of VecEnv functions transfered correctly to this class
