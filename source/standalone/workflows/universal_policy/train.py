@@ -86,7 +86,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     """Train with RSL-RL agent."""
     # override configurations with non-hydra CLI arguments
     # NOTE: If you want to turn off terminations comment out self.terminations.base_contact. ... in rough_env_cfg.py and base_contact = DoneTerm in velocity_env_cfg.py
-    args_cli.num_envs = 8 # TODO: (Low priority) switch to specifiying this through command line
+    args_cli.num_envs = 64 # TODO: (Low priority) switch to specifiying this through command line
     print("env_cfg.terminations: ", env_cfg.terminations)
 
     # agent_cfg = cli_args.update_rsl_rl_cfg(agent_cfg, args_cli) # NOTE: this line can route the config properly
@@ -162,6 +162,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # Divide the number of steps for training by the number of envs
     cfg.steps = int(cfg.single_env_steps/env_cfg.scene.num_envs)
+    cfg.plan2explore_pretrain_time = int(cfg.single_env_plan2explore_pretrain_time/env_cfg.scene.num_envs)
     # Multiply the number of updates for training by the number of envs
     cfg.num_updates = cfg.num_updates*env_cfg.scene.num_envs
     # Divide the eval_freq for training by the number of envs
