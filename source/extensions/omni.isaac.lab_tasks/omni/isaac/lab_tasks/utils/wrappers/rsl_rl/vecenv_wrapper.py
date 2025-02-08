@@ -85,6 +85,8 @@ class RslRlVecEnvWrapper(VecEnv):
             self.num_privileged_obs = gym.spaces.flatdim(self.unwrapped.single_observation_space["critic"])
         else:
             self.num_privileged_obs = 0
+        
+        self.constrain_action_space = constrain_action_space
 
         # NOTE: PPO doesn't interact with the action space at all
         if constrain_action_space:
@@ -181,7 +183,11 @@ class RslRlVecEnvWrapper(VecEnv):
         # return observations
         return obs_dict["policy"], {"observations": obs_dict}
 
-    def step(self, actions: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict]:
+    def step(self, actions: torch.Tensor, constrain_action) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict]:
+        # actions.shape = (num_envs, num_actions)
+        if self.constrain_action_space:
+            actions = torch.clamp(actions, min=self.env.env.single_robot_low, max=self.env.env.single_robot_high)
+
         # record step information
         obs_dict, rew, terminated, truncated, extras = self.env.step(actions)
         # compute dones for compatibility with RSL-RL
